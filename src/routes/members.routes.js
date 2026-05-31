@@ -12,6 +12,8 @@ const {
   editMember
 } = require("../controllers/members.controllers.js");
 const upload = require("../middlewares/multer.middleware.js");
+const authMiddleware =
+require("../middlewares/auth.middleware.js");
 
 const Router = express.Router();
 

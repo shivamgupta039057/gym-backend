@@ -6,6 +6,8 @@ const {
   deletePlan,
   editPlan
 } = require("../controllers/plan.controllers.js");
+const authMiddleware =
+require("../middlewares/auth.middleware.js");
 
 const Router = express.Router();
 

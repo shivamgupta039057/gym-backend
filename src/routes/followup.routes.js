@@ -6,6 +6,8 @@ const {
   deleteFollowup,
   editFollowup
 } = require("../controllers/followup.controllers");
+const authMiddleware =
+require("../middlewares/auth.middleware.js");
 
 const Router = express.Router();
 

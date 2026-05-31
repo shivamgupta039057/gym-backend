@@ -6,6 +6,8 @@ const {
   deleteAttendance,
   editAttendance
 } = require("../controllers/attendance.controllers");
+const authMiddleware =
+require("../middlewares/auth.middleware.js");
 
 const Router = express.Router();
 
