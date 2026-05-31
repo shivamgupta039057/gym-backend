@@ -110,6 +110,11 @@ const createMember = async (req, res) => {
 
     } = req.body;
 
+    console.log(req.files);
+console.log(
+  req.files?.photo?.[0]
+);
+
     // Plan Check
     const plan = await Plan.findById(planId);
 
