@@ -14,4 +14,6 @@ module.exports = (app) => {
 
   app.use(`${prefix}/dashboard`, require("./dashboard.routes.js"));
 
+  app.use(`${prefix}/auth`, require("./auth.routes"));
+
 };

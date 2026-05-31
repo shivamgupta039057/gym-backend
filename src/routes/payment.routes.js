@@ -9,14 +9,14 @@ const {
 
 const Router = express.Router();
 
-Router.post("/create", createPayment);
+Router.post("/create", authMiddleware ,  createPayment);
 
-Router.get("/get", getPayments);
+Router.get("/get", authMiddleware , getPayments);
 
-Router.post("/delete", deletePayment);
+Router.post("/delete", authMiddleware ,deletePayment);
 
 Router.get(
-  "/:id", getPaymentById
+  "/:id",  authMiddleware , getPaymentById
 );
 
 module.exports = Router;

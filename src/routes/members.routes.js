@@ -41,38 +41,38 @@ Router.post(
     },
 
   ]),
-
+  authMiddleware,
   createMember
 
 );
 
-Router.get("/get", getMembers);
+Router.get("/get", authMiddleware , getMembers);
 
-Router.post("/delete", deleteMember);
+Router.post("/delete", authMiddleware , deleteMember);
 
 Router.post(
-  "/change-status",
+  "/change-status", authMiddleware ,
   changeMemberStatus
 );
 
 
 Router.post(
-  "/renew-membership",
+  "/renew-membership", authMiddleware ,
   renewMembership
 );
 
 Router.post(
-  "/edit",
+  "/edit", authMiddleware ,
   editMember
 );
 
 Router.get(
-  "/member-payment-history/:memberId",
+  "/member-payment-history/:memberId", authMiddleware ,
   getMemberPaymentHistory
 );
 
-Router.get("/expired-members", getExpiredMembers);
+Router.get("/expired-members", authMiddleware , getExpiredMembers);
 
-Router.get("/expiring-members", getExpiringMembers);
+Router.get("/expiring-members", authMiddleware , getExpiringMembers);
 
 module.exports = Router;

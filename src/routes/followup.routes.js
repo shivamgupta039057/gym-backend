@@ -9,14 +9,14 @@ const {
 
 const Router = express.Router();
 
-Router.post("/create", createFollowup);
+Router.post("/create", authMiddleware ,  createFollowup);
 
-Router.get("/get", getFollowups);
+Router.get("/get", authMiddleware ,  getFollowups);
 
-Router.post("/delete", deleteFollowup);
+Router.post("/delete",  authMiddleware , deleteFollowup);
 
 Router.post(
-  "/edit",
+  "/edit", authMiddleware ,
   editFollowup
 );
 

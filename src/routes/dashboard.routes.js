@@ -7,7 +7,7 @@ const {
 const Router = express.Router();
 
 Router.get(
-  "/stats",
+  "/stats", authMiddleware ,
   getDashboardStats
 );
 

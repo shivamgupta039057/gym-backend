@@ -9,14 +9,14 @@ const {
 
 const Router = express.Router();
 
-Router.post("/create", createPlan);
+Router.post("/create", authMiddleware , createPlan);
 
-Router.get("/get", getPlans);
+Router.get("/get", authMiddleware , getPlans);
 
-Router.post("/delete", deletePlan);
+Router.post("/delete", authMiddleware ,deletePlan);
 
 Router.post(
-  "/edit",
+  "/edit", authMiddleware ,
   editPlan
 );
 

@@ -9,11 +9,11 @@ const {
 
 const Router = express.Router();
 
-Router.post("/create", createAttendance);
+Router.post("/create",  authMiddleware , createAttendance);
 
-Router.get("/get", getAttendance);
+Router.get("/get", authMiddleware , getAttendance);
 
-Router.post("/delete", deleteAttendance);
+Router.post("/delete", authMiddleware , deleteAttendance);
 
 Router.post(
   "/edit",
