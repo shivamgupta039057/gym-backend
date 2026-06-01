@@ -101,6 +101,7 @@ const createMember = async (req, res) => {
       address,
 
       aadhaarNumber,
+      joinDate, // Will use this value if provided in body
 
       planId,
       paidFees = 0,
@@ -111,74 +112,73 @@ const createMember = async (req, res) => {
     } = req.body;
 
     console.log(req.files);
-console.log(
-  req.files?.photo?.[0]
-);
+    console.log(
+      req.files?.photo?.[0]
+    );
 
     // Plan Check
     const plan = await Plan.findById(planId);
 
     if (!plan) {
-
       return res.status(404).json({
-
         status: 404,
-
         message: "Plan not found",
-
       });
-
     }
 
     // Upload Images To Cloudinary
 
     let photo = "";
-
     let aadhaarFront = "";
-
     let aadhaarBack = "";
 
     if (req.files?.photo?.[0]) {
-
       const uploadPhoto =
-      await uploadOnCloudinary(
-        req.files.photo[0].path
-      );
+        await uploadOnCloudinary(
+          req.files.photo[0].path
+        );
 
       photo =
-      uploadPhoto?.secure_url || "";
-
+        uploadPhoto?.secure_url || "";
     }
 
     if (req.files?.aadhaarFront?.[0]) {
-
       const uploadFront =
-      await uploadOnCloudinary(
-        req.files.aadhaarFront[0].path
-      );
+        await uploadOnCloudinary(
+          req.files.aadhaarFront[0].path
+        );
 
       aadhaarFront =
-      uploadFront?.secure_url || "";
-
+        uploadFront?.secure_url || "";
     }
 
     if (req.files?.aadhaarBack?.[0]) {
-
       const uploadBack =
-      await uploadOnCloudinary(
-        req.files.aadhaarBack[0].path
-      );
+        await uploadOnCloudinary(
+          req.files.aadhaarBack[0].path
+        );
 
       aadhaarBack =
-      uploadBack?.secure_url || "";
-
+        uploadBack?.secure_url || "";
     }
 
     // Dates
 
-    const joinDate = new Date();
+    // If joinDate is provided in body, use it, else new Date()
+    let actualJoinDate;
+    if (joinDate) {
+      actualJoinDate = new Date(joinDate);
+      if (isNaN(actualJoinDate)) {
+        return res.status(400).json({
+          status: 400,
+          message: "Invalid joinDate format",
+        });
+      }
+    } else {
+      actualJoinDate = new Date();
+    }
 
-    const expiryDate = new Date();
+    const expiryDate = new Date(actualJoinDate);
 
     expiryDate.setMonth(
       expiryDate.getMonth() +
@@ -199,40 +199,40 @@ console.log(
     // Create Member
 
     const member =
-    await Member.create({
+      await Member.create({
 
-      fullName,
-      phone,
-      age,
-      gender,
-      address,
+        fullName,
+        phone,
+        age,
+        gender,
+        address,
 
-      photo,
+        photo,
 
-      aadhaarNumber,
+        aadhaarNumber,
 
-      aadhaarFront,
+        aadhaarFront,
 
-      aadhaarBack,
+        aadhaarBack,
 
-      planId,
+        planId,
 
-      joinDate,
+        joinDate: actualJoinDate,
 
-      expiryDate,
+        expiryDate,
 
-      paidFees:
-      paidAmount,
+        paidFees:
+          paidAmount,
 
-      pendingFees,
+        pendingFees,
 
-      weight,
+        weight,
 
-      goal,
+        goal,
 
-      status: "active",
+        status: "active",
 
-    });
+      });
 
     // Payment Entry
 
@@ -241,19 +241,19 @@ console.log(
       await Payment.create({
 
         memberId:
-        member._id,
+          member._id,
 
         invoiceNumber:
-        `INV-${Date.now()}`,
+          `INV-${Date.now()}`,
 
         amount:
-        paidAmount,
+          paidAmount,
 
         paymentMethod:
-        "cash",
+          "cash",
 
         note:
-        "New Membership",
+          "New Membership",
 
       });
 
@@ -264,7 +264,7 @@ console.log(
       status: 201,
 
       message:
-      "Member created successfully",
+        "Member created successfully",
 
       data: member,
 
@@ -279,7 +279,7 @@ console.log(
       status: 500,
 
       message:
-      error.message,
+        error.message,
 
     });
 
@@ -587,6 +587,148 @@ const renewMembership = async (req, res) => {
   }
 
 };
+
+// const renewMembership = async (req, res) => {
+
+//   try {
+
+//     const {
+//       memberId,
+//       planId,
+//       paidAmount,
+//       paymentMethod,
+//     } = req.body;
+
+//     // Check Member
+
+//     const member =
+//     await Member.findById(memberId);
+
+//     if (!member) {
+
+//       return res.status(404).json({
+
+//         status: 404,
+
+//         message: "Member not found",
+
+//       });
+
+//     }
+
+//     // Check Selected Plan
+
+//     const plan =
+//     await Plan.findById(planId);
+
+//     if (!plan) {
+
+//       return res.status(404).json({
+
+//         status: 404,
+
+//         message: "Plan not found",
+
+//       });
+
+//     }
+
+//     // Current Date
+
+//     const today = new Date();
+
+//     // New Expiry Date
+
+//     const expiryDate =
+//     new Date(today);
+
+//     expiryDate.setMonth(
+
+//       expiryDate.getMonth() +
+//       Number(plan.duration)
+
+//     );
+
+//     // Payment Entry
+
+//     const payment =
+//     await Payment.create({
+
+//       memberId:
+//       member._id,
+
+//       invoiceNumber:
+//       `INV-${Date.now()}`,
+
+//       amount:
+//       Number(paidAmount),
+
+//       paymentMethod,
+
+//       note:
+//       `Membership Renewed - ${plan.planName}`,
+
+//     });
+
+//     // Update Member
+
+//     member.planId =
+//     plan._id;
+
+//     member.joinDate =
+//     today;
+
+//     member.expiryDate =
+//     expiryDate;
+
+//     member.paidFees =
+//     Number(paidAmount);
+
+//     member.pendingFees =
+//     Number(plan.price) -
+//     Number(paidAmount);
+
+//     member.status =
+//     "active";
+
+//     await member.save();
+
+//     const updatedMember =
+//     await Member.findById(
+//       member._id
+//     ).populate("planId");
+
+//     return res.status(200).json({
+
+//       status: 200,
+
+//       message:
+//       "Membership renewed successfully",
+
+//       data:
+//       updatedMember,
+
+//       payment,
+
+//     });
+
+//   } catch (error) {
+
+//     console.log(error);
+
+//     return res.status(500).json({
+
+//       status: 500,
+
+//       message:
+//       error.message,
+
+//     });
+
+//   }
+
+// };
+
 
 const getMemberPaymentHistory =
   async (req, res) => {
