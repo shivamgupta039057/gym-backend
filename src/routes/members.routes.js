@@ -9,7 +9,8 @@ const {
   renewMembership,
   getMemberPaymentHistory,
   changeMemberStatus,
-  editMember
+  editMember,
+  getAllMember
 } = require("../controllers/members.controllers.js");
 const upload = require("../middlewares/multer.middleware.js");
 const authMiddleware =
@@ -47,6 +48,8 @@ Router.post(
   createMember
 
 );
+
+Router.get("/getallmembers", authMiddleware , getAllMember);
 
 Router.get("/get", authMiddleware , getMembers);
 

@@ -287,6 +287,72 @@ const createMember = async (req, res) => {
 
 };
 
+const getAllMember = async (req, res) => {
+
+  try {
+    console.log("kjsdhskadskjdhkjfhshdsjhckdhbcdjkdshjkdsj");
+    
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    // Auto Update Expired Members
+
+    await Member.updateMany(
+
+      {
+        expiryDate: {
+          $lt: today,
+        },
+      },
+
+      {
+        $set: {
+          status: "expired",
+        },
+      }
+
+    );
+
+    // Get All Members
+
+    const members = await Member.find()
+
+      .populate("planId")
+
+      .sort({
+        createdAt: -1,
+      });
+
+    return res.status(200).json({
+
+      status: 200,
+
+      message:
+        "Members fetched successfully",
+
+      totalMembers:
+        members.length,
+
+      data: members,
+
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+
+      status: 500,
+
+      message: error.message,
+
+    });
+
+  }
+
+};
+
 
 const getMembers = async (req, res) => {
 
@@ -1122,5 +1188,6 @@ module.exports = {
   renewMembership,
   getMemberPaymentHistory,
   changeMemberStatus,
-  editMember
+  editMember,
+  getAllMember
 };
